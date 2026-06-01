@@ -98,11 +98,6 @@ export function CourseCard({ course }: CourseCardProps) {
               <span>{course.duration}</span>
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <Users size={14} className="text-brand-orange shrink-0" />
-            <span>{course.seats} مقعد</span>
-          </div>
-        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end pt-3 border-t border-gray-100 mt-2">
