@@ -1,6 +1,5 @@
 // src/components/MeetingCard.tsx
 import Link from "next/link";
-import Image from "next/image";
 import { Meeting } from "@/lib/types";
 import { Calendar, Clock, MapPin, ArrowLeft, Users, Sparkles } from "lucide-react";
 
@@ -18,7 +17,6 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   const yyyy = meetingDate.getFullYear();
   const dateFormatted = `${dd}/${mm}/${yyyy}`;
 
-  // Format time (HH:MM) to 12-hour Arabic
   const timeFormatted = (() => {
     const [hours, minutes] = meeting.time.split(":");
     const h = parseInt(hours);
@@ -32,11 +30,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
       {/* Poster */}
       <div className="relative aspect-[3/4] overflow-hidden bg-brand-dark">
         {meeting.poster_url ? (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src={meeting.poster_url}
             alt={meeting.title}
-            fill
-            className="object-contain group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
