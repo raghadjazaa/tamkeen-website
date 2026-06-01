@@ -8,9 +8,19 @@ interface RegisterFormProps {
   courseId: string;
   courseName: string;
   isOpen: boolean;
+  requireEmail?: boolean;
+  requireAssociationName?: boolean;
+  requireLicenseNumber?: boolean;
 }
 
-export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps) {
+export function RegisterForm({
+  courseId,
+  courseName,
+  isOpen,
+  requireEmail = false,
+  requireAssociationName = false,
+  requireLicenseNumber = false,
+}: RegisterFormProps) {
   const [state, setState] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -19,7 +29,9 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
     full_name: "",
     phone: "",
     email: "",
-    website: "", //ٌ honeypot — must stay empty
+    association_name: "",
+    license_number: "",
+    website: "", // 🍯 honeypot
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -28,17 +40,32 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.full_name || !form.phone || !form.email) return;
+    if (!form.full_name || !form.phone) return;
+    if (requireEmail && !form.email) return;
+    if (requireAssociationName && !form.association_name) return;
+    if (requireLicenseNumber && !form.license_number) return;
 
     startTransition(async () => {
       const result = await registerInCourse({
         course_id: courseId,
-        ...form,
+        full_name: form.full_name,
+        phone: form.phone,
+        email: requireEmail ? form.email : "",
+        association_name: requireAssociationName ? form.association_name : null,
+        license_number: requireLicenseNumber ? form.license_number : null,
+        website: form.website,
       });
       setMessage(result.message);
       setState(result.success ? "success" : "error");
       if (result.success)
-        setForm({ full_name: "", phone: "", email: "", website: "" });
+        setForm({
+          full_name: "",
+          phone: "",
+          email: "",
+          association_name: "",
+          license_number: "",
+          website: "",
+        });
     });
   }
 
@@ -53,12 +80,15 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
     );
   }
 
+  const inputClass =
+    "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all";
+  const labelClass = "block text-sm font-medium text-brand-dark mb-1.5";
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       <h2 className="text-xl font-bold text-brand-dark mb-1">التسجيل في الدورة</h2>
       <p className="text-sm text-gray-400 mb-6">{courseName}</p>
 
-      {/* Feedback messages */}
       {state === "success" && (
         <div className="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-5">
           <CheckCircle size={18} className="text-emerald-600 mt-0.5 shrink-0" />
@@ -73,7 +103,7 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 🍯 Honeypot — مخفي عن المستخدم، يكشف البوتات */}
+        {/* 🍯 Honeypot */}
         <div
           aria-hidden="true"
           style={{
@@ -98,9 +128,8 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
           />
         </div>
 
-        {/* Full name */}
         <div>
-          <label className="block text-sm font-medium text-brand-dark mb-1.5">
+          <label className={labelClass}>
             الاسم الكامل <span className="text-red-400">*</span>
           </label>
           <input
@@ -109,13 +138,12 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
             onChange={handleChange}
             required
             placeholder="أدخل اسمك الثلاثي"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all"
+            className={inputClass}
           />
         </div>
 
-        {/* Phone */}
         <div>
-          <label className="block text-sm font-medium text-brand-dark mb-1.5">
+          <label className={labelClass}>
             رقم الجوال <span className="text-red-400">*</span>
           </label>
           <input
@@ -124,25 +152,58 @@ export function RegisterForm({ courseId, courseName, isOpen }: RegisterFormProps
             onChange={handleChange}
             required
             placeholder="05xxxxxxxx"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all"
+            className={inputClass}
           />
         </div>
 
-        {/* Email */}
-        <div>
-          <label className="block text-sm font-medium text-brand-dark mb-1.5">
-            البريد الإلكتروني <span className="text-red-400">*</span>
-          </label>
-          <input
-            name="email"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            placeholder="example@email.com"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all"
-          />
-        </div>
+        {requireEmail && (
+          <div>
+            <label className={labelClass}>
+              البريد الإلكتروني <span className="text-red-400">*</span>
+            </label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="example@email.com"
+              className={inputClass}
+            />
+          </div>
+        )}
+
+        {requireAssociationName && (
+          <div>
+            <label className={labelClass}>
+              اسم الجمعية <span className="text-red-400">*</span>
+            </label>
+            <input
+              name="association_name"
+              value={form.association_name}
+              onChange={handleChange}
+              required
+              placeholder="اسم الجمعية اللي تنتمين لها"
+              className={inputClass}
+            />
+          </div>
+        )}
+
+        {requireLicenseNumber && (
+          <div>
+            <label className={labelClass}>
+              رقم الترخيص <span className="text-red-400">*</span>
+            </label>
+            <input
+              name="license_number"
+              value={form.license_number}
+              onChange={handleChange}
+              required
+              placeholder="رقم الترخيص"
+              className={inputClass}
+            />
+          </div>
+        )}
 
         <button
           type="submit"

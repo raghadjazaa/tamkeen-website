@@ -22,6 +22,9 @@ export interface Course {
   image_url: string | null;
   seats: number;
   price: number;
+  require_email: boolean;
+  require_association_name: boolean;
+  require_license_number: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -43,6 +46,9 @@ export interface CourseInput {
   image_url: string | null;
   seats: number;
   price: number;
+  require_email: boolean;
+  require_association_name: boolean;
+  require_license_number: boolean;
 }
 
 export interface Registration {
@@ -51,6 +57,8 @@ export interface Registration {
   full_name: string;
   phone: string;
   email: string;
+  association_name: string | null;
+  license_number: string | null;
   status: "pending" | "confirmed" | "cancelled";
   registered_at: string;
 }
@@ -60,6 +68,8 @@ export interface RegistrationInput {
   full_name: string;
   phone: string;
   email: string;
+  association_name?: string | null;
+  license_number?: string | null;
   website?: string; // honeypot — must be empty
 }
 
