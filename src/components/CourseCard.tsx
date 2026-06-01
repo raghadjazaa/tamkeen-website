@@ -1,7 +1,7 @@
 // src/components/CourseCard.tsx
 import Link from "next/link";
 import { Course } from "@/lib/types";
-import { Calendar, MapPin, User, Clock, Users, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, User, Clock, ArrowLeft } from "lucide-react";
 
 interface CourseCardProps {
   course: Course;
@@ -98,6 +98,7 @@ export function CourseCard({ course }: CourseCardProps) {
               <span>{course.duration}</span>
             </div>
           )}
+        </div>
 
         {/* Footer */}
         <div className="flex items-center justify-end pt-3 border-t border-gray-100 mt-2">
