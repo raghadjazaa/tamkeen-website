@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getCourseById } from "../../../actions";
 import { Header } from "@/components/header";
 import { RegisterForm } from "@/components/Registerform";
-import { QRCode } from "@/components/QRCode";
+import { ShareCourseButton } from "@/components/ShareCourseButton";
 import {
   Calendar,
   MapPin,
@@ -36,10 +36,6 @@ export default async function CourseDetailPage({ params }: Props) {
   if (!course) notFound();
 
   const isOpen = course.status === "open";
-
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://tamkeen.org.sa";
-  const registrationUrl = `${baseUrl}/courses/${course.id}`;
 
   const dateFormatted = new Date(course.date).toLocaleDateString("ar-SA", {
     weekday: "long",
@@ -126,9 +122,12 @@ export default async function CourseDetailPage({ params }: Props) {
                   )}
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-snug mb-4">
-                  {course.title}
-                </h1>
+                <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-snug">
+                    {course.title}
+                  </h1>
+                  <ShareCourseButton courseId={course.id} />
+                </div>
 
                 {course.description && (
                   <p className="text-white/60 leading-loose text-sm">
@@ -160,9 +159,6 @@ export default async function CourseDetailPage({ params }: Props) {
                     : []),
                   ...(course.location
                     ? [{ icon: MapPin, label: "المكان", value: course.location }]
-                    : []),
-                  ...(course.seats && course.seats > 0
-                    ? [{ icon: Users, label: "عدد المقاعد", value: `${course.seats} مقعد` }]
                     : []),
                 ].map(({ icon: Icon, label, value }) => (
                   <div
@@ -210,7 +206,6 @@ export default async function CourseDetailPage({ params }: Props) {
                 courseName={course.title}
                 isOpen={isOpen}
               />
-              <QRCode url={registrationUrl} courseName={course.title} />
             </div>
           </div>
         </div>
