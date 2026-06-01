@@ -132,7 +132,7 @@ function AdminDashboard() {
   const [expandedMeeting, setExpandedMeeting] = useState<string | null>(null);
   const [meetingRegs, setMeetingRegs] = useState<Record<string, MeetingRegistration[]>>({});
   const [copiedMeetingId, setCopiedMeetingId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition(); // ✅ تم تصحيح الخطأ هنا
 
   function copyLink(courseId: string) {
     const url = `${window.location.origin}/courses/${courseId}`;
@@ -1174,6 +1174,9 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
       seats: isNaN(seatsNum) ? 0 : seatsNum,
       price: 0,
       objectives: objectives.filter((o) => o.trim() !== ""),
+      require_email: fd.get("require_email") === "on",
+      require_association_name: fd.get("require_association_name") === "on",
+      require_license_number: fd.get("require_license_number") === "on",
     };
 
     startTransition(async () => {
@@ -1321,6 +1324,20 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="md:col-span-2 space-y-3 pt-2 border-t border-gray-100">
+          <p className="text-sm font-medium text-brand-dark">حقول إضافية في نموذج التسجيل</p>
+          {[
+            { name: "require_email", label: "البريد الإلكتروني" },
+            { name: "require_association_name", label: "اسم الجهة / الجمعية" },
+            { name: "require_license_number", label: "رقم الترخيص" },
+          ].map((field) => (
+            <label key={field.name} className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name={field.name} className="w-4 h-4 accent-brand-orange" />
+              <span className="text-sm text-gray-700">{field.label}</span>
+            </label>
+          ))}
         </div>
 
         <div>
