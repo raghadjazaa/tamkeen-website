@@ -17,11 +17,12 @@ import {
 import Link from "next/link";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: Props) {
-  const course = await getCourseById(params.id);
+  const { id } = await params;
+  const course = await getCourseById(id);
   if (!course) return { title: "دورة غير موجودة" };
   return {
     title: `${course.title} | جمعية تمكين القيادات الأهلية`,
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function CourseDetailPage({ params }: Props) {
-  const course = await getCourseById(params.id);
+  const { id } = await params;
+  const course = await getCourseById(id);
   if (!course) notFound();
 
   const isOpen = course.status === "open";
@@ -53,6 +55,22 @@ export default async function CourseDetailPage({ params }: Props) {
         day: "numeric",
       })
     : null;
+
+  // Format optional time range (e.g. "10:00 ص - 1:00 م")
+  const formatTime = (t?: string | null) => {
+    if (!t) return null;
+    const [hh, mm] = t.split(":");
+    const h = parseInt(hh);
+    const suffix = h >= 12 ? "م" : "ص";
+    const hour12 = h % 12 || 12;
+    return `${hour12}:${mm} ${suffix}`;
+  };
+  const timeStart = formatTime(course.time_start);
+  const timeEnd = formatTime(course.time_end);
+  const timeRange =
+    timeStart && timeEnd
+      ? `${timeStart} – ${timeEnd}`
+      : timeStart || timeEnd || null;
 
   return (
     <div className="min-h-screen bg-brand-bg font-tajawal">
@@ -85,7 +103,7 @@ export default async function CourseDetailPage({ params }: Props) {
                 <img
                   src={course.image_url}
                   alt={course.title}
-                  className="w-full h-56 object-cover opacity-80"
+                  className="w-full max-h-[28rem] object-contain bg-brand-dark"
                 />
               )}
 
@@ -134,13 +152,18 @@ export default async function CourseDetailPage({ params }: Props) {
                   ...(endDateFormatted
                     ? [{ icon: Calendar, label: "تاريخ النهاية", value: endDateFormatted }]
                     : []),
+                  ...(timeRange
+                    ? [{ icon: Clock, label: "الوقت", value: timeRange }]
+                    : []),
                   ...(course.duration
                     ? [{ icon: Clock, label: "المدة", value: course.duration }]
                     : []),
                   ...(course.location
                     ? [{ icon: MapPin, label: "المكان", value: course.location }]
                     : []),
-                  { icon: Users, label: "عدد المقاعد", value: `${course.seats} مقعد` },
+                  ...(course.seats && course.seats > 0
+                    ? [{ icon: Users, label: "عدد المقاعد", value: `${course.seats} مقعد` }]
+                    : []),
                 ].map(({ icon: Icon, label, value }) => (
                   <div
                     key={label}
@@ -157,19 +180,6 @@ export default async function CourseDetailPage({ params }: Props) {
                 ))}
               </div>
             </div>
-
-            {/* Instructor bio */}
-            {course.instructor_bio && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h2 className="text-brand-dark font-bold text-lg mb-3 flex items-center gap-2">
-                  <User size={18} className="text-brand-gold" />
-                  عن المدرب
-                </h2>
-                <p className="text-gray-600 text-sm leading-loose">
-                  {course.instructor_bio}
-                </p>
-              </div>
-            )}
 
             {/* Objectives / محاور */}
             {course.objectives && course.objectives.length > 0 && (
@@ -191,11 +201,20 @@ export default async function CourseDetailPage({ params }: Props) {
               </div>
             )}
           </div>
-          
-            {/* QR Code */}
-            <QRCode url={registrationUrl} courseName={course.title} />
+
+          {/* ── Right Column ──────────────────────────────────── */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              <RegisterForm
+                courseId={course.id}
+                courseName={course.title}
+                isOpen={isOpen}
+              />
+              <QRCode url={registrationUrl} courseName={course.title} />
+            </div>
           </div>
         </div>
       </div>
+    </div>
   );
 }

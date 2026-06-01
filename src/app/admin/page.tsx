@@ -143,7 +143,6 @@ function AdminDashboard() {
 
   const supabase = createClient();
 
-  // Load courses
   useEffect(() => {
     async function load() {
       const { data } = await supabase
@@ -156,7 +155,6 @@ function AdminDashboard() {
     load();
   }, []);
 
-  // Load meetings
   useEffect(() => {
     async function loadMeetings() {
       const data = await getMeetings();
@@ -284,7 +282,6 @@ function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-brand-light font-tajawal">
-      {/* Admin Header */}
       <header className="bg-brand-dark sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -317,7 +314,6 @@ function AdminDashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Tabs */}
         <div className="flex gap-2 mb-8 flex-wrap">
           {(["courses", "add", "meetings", "add-meeting", "settings"] as const).map((tab) => (
             <button
@@ -344,7 +340,6 @@ function AdminDashboard() {
           ))}
         </div>
 
-        {/* COURSES TAB */}
         {activeTab === "courses" && (
           <div className="space-y-4">
             {loading ? (
@@ -363,7 +358,6 @@ function AdminDashboard() {
                   key={course.id}
                   className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-brand-orange/30 transition-colors"
                 >
-                  {/* Course row */}
                   <div className="p-5 flex items-center justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -386,7 +380,6 @@ function AdminDashboard() {
                       </p>
                     </div>
 
-                    {/* Actions */}
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => copyLink(course.id)}
@@ -440,7 +433,6 @@ function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* Registrations panel */}
                   {expandedCourse === course.id && (
                     <div className="border-t border-gray-100 bg-brand-light/50">
                       <div className="p-4 flex items-center justify-between">
@@ -537,7 +529,6 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* ADD COURSE TAB */}
         {activeTab === "add" && (
           <AddCourseForm
             onSuccess={(newCourse) => {
@@ -547,7 +538,6 @@ function AdminDashboard() {
           />
         )}
 
-        {/* MEETINGS TAB */}
         {activeTab === "meetings" && (
           <div className="space-y-4">
             {meetingsLoading ? (
@@ -711,7 +701,6 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* ADD MEETING TAB */}
         {activeTab === "add-meeting" && (
           <AddMeetingForm
             onSuccess={(newMeeting) => {
@@ -721,7 +710,6 @@ function AdminDashboard() {
           />
         )}
 
-        {/* SETTINGS TAB */}
         {activeTab === "settings" && <SettingsForm />}
       </div>
     </div>
@@ -738,7 +726,6 @@ function AddMeetingForm({ onSuccess }: { onSuccess: (m: Meeting) => void }) {
   const [posterUrl, setPosterUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
   const [objectives, setObjectives] = useState<string[]>([""]);
-  const supabase = createClient();
 
   async function handlePosterUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -1126,7 +1113,6 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
   const [objectives, setObjectives] = useState<string[]>([""]);
   const [imageUrl, setImageUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
-  const supabase = createClient();
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -1153,18 +1139,12 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
     }
   }
 
-  function removeImage() {
-    setImageUrl("");
-  }
+  function removeImage() { setImageUrl(""); }
 
-  function addObjective() {
-    setObjectives((prev) => [...prev, ""]);
-  }
-
+  function addObjective() { setObjectives((prev) => [...prev, ""]); }
   function updateObjective(i: number, val: string) {
     setObjectives((prev) => prev.map((o, idx) => (idx === i ? val : o)));
   }
-
   function removeObjective(i: number) {
     setObjectives((prev) => prev.filter((_, idx) => idx !== i));
   }
@@ -1174,6 +1154,9 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
     setError("");
     const fd = new FormData(e.currentTarget);
 
+    const seatsRaw = (fd.get("seats") as string)?.trim();
+    const seatsNum = seatsRaw ? parseInt(seatsRaw) : 0;
+
     const input = {
       title: fd.get("title") as string,
       description: (fd.get("description") as string) || null,
@@ -1181,12 +1164,14 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
       instructor_bio: (fd.get("instructor_bio") as string) || null,
       date: fd.get("date") as string,
       end_date: (fd.get("end_date") as string) || null,
+      time_start: (fd.get("time_start") as string) || null,
+      time_end: (fd.get("time_end") as string) || null,
       duration: (fd.get("duration") as string) || null,
       location: (fd.get("location") as string) || null,
       status: fd.get("status") as "open" | "closed",
       category: (fd.get("category") as string) || null,
       image_url: imageUrl || null,
-      seats: parseInt(fd.get("seats") as string) || 30,
+      seats: isNaN(seatsNum) ? 0 : seatsNum,
       price: 0,
       objectives: objectives.filter((o) => o.trim() !== ""),
     };
@@ -1251,8 +1236,18 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
           </div>
 
           <div>
-            <label className={labelClass}>تاريخ النهاية</label>
+            <label className={labelClass}>تاريخ النهاية (اختياري)</label>
             <input name="end_date" type="date" className={inputClass} />
+          </div>
+
+          <div>
+            <label className={labelClass}>وقت البداية (اختياري)</label>
+            <input name="time_start" type="time" className={inputClass} />
+          </div>
+
+          <div>
+            <label className={labelClass}>وقت النهاية (اختياري)</label>
+            <input name="time_end" type="time" className={inputClass} />
           </div>
 
           <div>
@@ -1266,8 +1261,8 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
           </div>
 
           <div>
-            <label className={labelClass}>عدد المقاعد</label>
-            <input name="seats" type="number" min="1" defaultValue="30" className={inputClass} />
+            <label className={labelClass}>عدد المقاعد (اختياري)</label>
+            <input name="seats" type="number" min="0" placeholder="اتركيه فاضي إذا ما تبين تظهر" className={inputClass} />
           </div>
 
           <div>

@@ -13,6 +13,8 @@ export interface Course {
   instructor_bio: string | null;
   date: string;
   end_date: string | null;
+  time_start: string | null;
+  time_end: string | null;
   duration: string | null;
   location: string | null;
   status: "open" | "closed";
@@ -32,6 +34,8 @@ export interface CourseInput {
   instructor_bio: string | null;
   date: string;
   end_date: string | null;
+  time_start: string | null;
+  time_end: string | null;
   duration: string | null;
   location: string | null;
   status: "open" | "closed";

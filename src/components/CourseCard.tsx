@@ -1,6 +1,5 @@
 // src/components/CourseCard.tsx
 import Link from "next/link";
-import Image from "next/image";
 import { Course } from "@/lib/types";
 import { Calendar, MapPin, User, Clock, Users, ArrowLeft } from "lucide-react";
 
@@ -19,14 +18,14 @@ export function CourseCard({ course }: CourseCardProps) {
 
   return (
     <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-brand-orange/40 flex flex-col">
-      {/* Image / Placeholder */}
-      <div className="relative h-44 overflow-hidden bg-brand-dark">
+      {/* Poster — flexible (3:4 with object-contain) */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-brand-dark">
         {course.image_url ? (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src={course.image_url}
             alt={course.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           /* Geometric placeholder */
