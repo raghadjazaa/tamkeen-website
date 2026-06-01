@@ -1264,11 +1264,6 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
           </div>
 
           <div>
-            <label className={labelClass}>عدد المقاعد (اختياري)</label>
-            <input name="seats" type="number" min="0" placeholder="اتركيه فاضي إذا ما تبين تظهر" className={inputClass} />
-          </div>
-
-          <div>
             <label className={labelClass}>حالة التسجيل</label>
             <select name="status" className={inputClass}>
               <option value="open">مفتوح</option>
