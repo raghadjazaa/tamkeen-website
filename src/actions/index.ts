@@ -110,8 +110,7 @@ export async function deleteCourse(
 export async function registerInCourse(
   input: RegistrationInput
 ): Promise<{ success: boolean; message: string }> {
-  // 🍯 Honeypot — لو حقل website متعبّى، اعتبره بوت
-  // نرجّع success وهمي عشان البوت ما يحس أنه انكشف
+  // 🍯 Honeypot
   if (input.website && input.website.trim() !== "") {
     console.warn("[honeypot] blocked bot submission on course registration");
     return { success: true, message: "تم استلام طلبك" };
@@ -129,16 +128,18 @@ export async function registerInCourse(
   if (course.status === "closed")
     return { success: false, message: "التسجيل في هذه الدورة مغلق حالياً" };
 
-  const { count } = await supabase
-    .from("registrations")
-    .select("*", { count: "exact", head: true })
-    .eq("course_id", input.course_id)
-    .neq("status", "cancelled");
+  // ✅ تجاهل حد المقاعد إذا كان 0
+  if (course.seats > 0) {
+    const { count } = await supabase
+      .from("registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("course_id", input.course_id)
+      .neq("status", "cancelled");
 
-  if ((count ?? 0) >= course.seats)
-    return { success: false, message: "اكتملت مقاعد هذه الدورة" };
+    if ((count ?? 0) >= course.seats)
+      return { success: false, message: "اكتملت مقاعد هذه الدورة" };
+  }
 
-  // نشيل حقل website قبل ما نخزّن في DB (مو موجود كعمود)
   const { website, ...payload } = input;
   void website;
 
@@ -203,7 +204,7 @@ export async function updateRegistrationStatus(
 }
 
 // ═════════════════════════════════════════════════════════════
-// MEETINGS (لقاءات القيادات الدورية)
+// MEETINGS
 // ═════════════════════════════════════════════════════════════
 
 export async function getMeetings(filters?: {
@@ -271,9 +272,7 @@ export async function updateMeetingStatus(
   }
 
   const { error } = await supabase.from("meetings").update(updates).eq("id", id);
-  if (error) {
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
   revalidatePath("/");
   revalidatePath("/admin");
@@ -296,14 +295,12 @@ export async function deleteMeeting(
 export async function createMeetingRegistration(
   input: CreateMeetingRegistrationInput
 ): Promise<{ success: boolean; error?: string }> {
-  // 🍯 Honeypot — لو حقل website متعبّى، اعتبره بوت
-  // نرجّع success وهمي عشان البوت ما يحس أنه انكشف
+  // 🍯 Honeypot
   if (input.website && input.website.trim() !== "") {
     console.warn("[honeypot] blocked bot submission on meeting registration");
     return { success: true };
   }
 
-  // نشيل حقل website قبل ما نخزّن في DB (مو موجود كعمود)
   const { website, ...payload } = input;
   void website;
 
@@ -342,7 +339,7 @@ export async function getMeetingRegistrations(
 }
 
 // ═════════════════════════════════════════════════════════════
-// SITE SETTINGS (بيانات التواصل)
+// SITE SETTINGS
 // ═════════════════════════════════════════════════════════════
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -391,7 +388,7 @@ export async function updateSiteSettings(
 }
 
 // ═════════════════════════════════════════════════════════════
-// ADMIN AUTHENTICATION & SECURE UPLOAD
+// ADMIN AUTH & UPLOAD
 // ═════════════════════════════════════════════════════════════
 
 const SESSION_COOKIE = "tamkeen_admin_session";
@@ -410,13 +407,12 @@ export async function verifyAdminPassword(password: string): Promise<boolean> {
   }
   if (password !== correctPassword) return false;
 
-  // Set secure session cookie
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, getSessionToken(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: 60 * 60 * 8, // 8 hours
+    maxAge: 60 * 60 * 8,
     path: "/",
   });
   return true;
