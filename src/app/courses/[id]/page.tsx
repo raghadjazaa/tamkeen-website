@@ -1,6 +1,5 @@
 // src/app/courses/[id]/page.tsx — Course Detail Page (Server Component)
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { getCourseById } from "@/actions";
 import { Header } from "@/components/header";
@@ -79,13 +78,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <div className="lg:col-span-3 space-y-6">
             {/* Cover Image */}
             {course.image_url && (
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-brand-dark shadow-lg">
-                <Image
+              <div className="w-full rounded-2xl overflow-hidden bg-brand-dark shadow-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={course.image_url}
                   alt={course.title}
-                  fill
-                  className="object-cover"
-                  priority
+                  className="w-full h-auto object-contain"
                 />
               </div>
             )}
