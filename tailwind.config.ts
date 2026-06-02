@@ -10,13 +10,16 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          bg:     "#F8F8F8",
-          dark:   "#232937",
-          gold:   "#C6893F",
+          bg:           "#F8F8F8",
+          dark:         "#232937",
+          gold:         "#C6893F",
           "gold-light": "#D4A05A",
           "gold-dark":  "#A8722E",
           "dark-light": "#2E3649",
           "dark-muted": "#4A5568",
+          orange:       "#C6893F",
+          "orange-hover": "#A8722E",
+          light:        "#F8F8F8",
         },
       },
       fontFamily: {
