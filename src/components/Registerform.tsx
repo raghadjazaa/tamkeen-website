@@ -31,7 +31,7 @@ export function RegisterForm({
     email: "",
     association_name: "",
     license_number: "",
-    website: "", // 🍯 honeypot
+    website: "",
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -81,7 +81,7 @@ export function RegisterForm({
   }
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all";
+    "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 outline-none text-brand-dark placeholder-gray-300 text-sm transition-all";
   const labelClass = "block text-sm font-medium text-brand-dark mb-1.5";
 
   return (
@@ -183,7 +183,7 @@ export function RegisterForm({
               value={form.association_name}
               onChange={handleChange}
               required
-              placeholder="اسم الجمعية اللي تنتمين لها"
+              placeholder="اسم الجمعية"
               className={inputClass}
             />
           </div>
@@ -208,7 +208,7 @@ export function RegisterForm({
         <button
           type="submit"
           disabled={isPending || state === "success"}
-          className="w-full flex items-center justify-center gap-2 bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all text-sm mt-2"
+          className="w-full flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all text-sm mt-2"
         >
           {isPending ? (
             <>
