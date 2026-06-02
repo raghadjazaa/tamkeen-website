@@ -17,8 +17,8 @@ export function CourseCard({ course }: CourseCardProps) {
   });
 
   return (
-    <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-brand-orange/40 flex flex-col">
-      {/* Poster — flexible (3:4 with object-contain) */}
+    <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-brand-orange/40 flex flex-col">
+      {/* Poster */}
       <div className="relative aspect-[3/4] overflow-hidden bg-brand-dark">
         {course.image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -28,7 +28,6 @@ export function CourseCard({ course }: CourseCardProps) {
             className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          /* Geometric placeholder */
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-4 right-4 w-20 h-20 border border-brand-orange rounded-full" />
@@ -44,10 +43,10 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* Status badge */}
         <div className="absolute top-3 right-3 z-10">
           <span
-            className={`text-xs font-semibold px-3 py-1 rounded-full ${
+            className={`text-xs font-semibold px-3 py-1 rounded-full shadow-md ${
               isOpen
                 ? "bg-emerald-500 text-white"
-                : "bg-gray-400 text-white"
+                : "bg-gray-700 text-white"
             }`}
           >
             {isOpen ? "مفتوح للتسجيل" : "مغلق"}
@@ -57,7 +56,7 @@ export function CourseCard({ course }: CourseCardProps) {
         {/* Category */}
         {course.category && (
           <div className="absolute bottom-3 right-3 z-10">
-            <span className="text-xs bg-white/90 text-brand-dark px-2 py-0.5 rounded-md font-medium">
+            <span className="text-xs bg-white/95 text-brand-dark px-3 py-1 rounded-md font-bold backdrop-blur-sm shadow-sm">
               {course.category}
             </span>
           </div>
@@ -77,42 +76,44 @@ export function CourseCard({ course }: CourseCardProps) {
         )}
 
         {/* Meta */}
-        <div className="space-y-1.5 text-sm text-gray-600 mt-auto">
+        <div className="space-y-2 text-sm text-gray-600 mt-auto pt-2">
           <div className="flex items-center gap-2">
-            <User size={14} className="text-brand-orange shrink-0" />
+            <User size={15} className="text-brand-orange shrink-0" />
             <span>{course.instructor}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Calendar size={14} className="text-brand-orange shrink-0" />
+            <Calendar size={15} className="text-brand-orange shrink-0" />
             <span>{dateFormatted}</span>
           </div>
           {course.location && (
             <div className="flex items-center gap-2">
-              <MapPin size={14} className="text-brand-orange shrink-0" />
-              <span>{course.location}</span>
+              <MapPin size={15} className="text-brand-orange shrink-0" />
+              <span className="truncate">{course.location}</span>
             </div>
           )}
           {course.duration && (
             <div className="flex items-center gap-2">
-              <Clock size={14} className="text-brand-orange shrink-0" />
+              <Clock size={15} className="text-brand-orange shrink-0" />
               <span>{course.duration}</span>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end pt-3 border-t border-gray-100 mt-2">
-          <Link
-            href={`/courses/${course.id}`}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-              isOpen
-                ? "bg-brand-orange hover:bg-brand-orange-hover text-white shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                : "bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none"
-            }`}
-          >
-            {isOpen ? "سجّل الآن" : "مغلق"}
-            {isOpen && <ArrowLeft size={14} />}
-          </Link>
+        <div className="pt-3 border-t border-gray-100 mt-2">
+          {isOpen ? (
+            <Link
+              href={`/courses/${course.id}`}
+              className="w-full flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            >
+              سجّل الآن
+              <ArrowLeft size={15} />
+            </Link>
+          ) : (
+            <div className="bg-gray-50 rounded-lg py-3 text-center">
+              <p className="text-gray-500 text-sm">التسجيل مغلق</p>
+            </div>
+          )}
         </div>
       </div>
     </article>
