@@ -130,10 +130,11 @@ export function MeetingRegisterForm({ meetingId, meetingTitle }: MeetingRegister
           />
         </div>
 
-        {/* الاسم الرباعي */}
+        
+        {/*الاسم الثلاثي*\}
         <div>
           <label className="block text-sm font-medium text-brand-dark mb-1.5">
-            الاسم الرباعي <span className="text-red-500">*</span>
+           الاسم الثلاثي <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <User
