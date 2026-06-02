@@ -465,6 +465,8 @@ function AdminDashboard() {
                                 <th className="text-right px-4 py-2 font-medium">الاسم</th>
                                 <th className="text-right px-4 py-2 font-medium">الجوال</th>
                                 <th className="text-right px-4 py-2 font-medium">البريد</th>
+                                <th className="text-right px-4 py-2 font-medium">الجهة</th>
+                                <th className="text-right px-4 py-2 font-medium">الترخيص</th>
                                 <th className="text-right px-4 py-2 font-medium">الحالة</th>
                                 <th className="text-right px-4 py-2 font-medium">إجراء</th>
                               </tr>
@@ -481,6 +483,12 @@ function AdminDashboard() {
                                   <td className="px-4 py-3 text-gray-600">{reg.phone}</td>
                                   <td className="px-4 py-3 text-gray-600 text-xs">
                                     {reg.email}
+                                  </td>
+                                  <td className="px-4 py-3 text-gray-600 text-xs">
+                                    {reg.association_name || "—"}
+                                  </td>
+                                  <td className="px-4 py-3 text-gray-600 text-xs">
+                                    {reg.license_number || "—"}
                                   </td>
                                   <td className="px-4 py-3">
                                     <span
@@ -1261,6 +1269,11 @@ function AddCourseForm({ onSuccess }: { onSuccess: (c: Course) => void }) {
           <div>
             <label className={labelClass}>المكان</label>
             <input name="location" placeholder="مثال: الرياض / عن بعد" className={inputClass} />
+          </div>
+
+          <div>
+            <label className={labelClass}>عدد المقاعد (اختياري)</label>
+            <input name="seats" type="number" min="0" placeholder="اتركيه فاضي إذا ما تبين تظهر" className={inputClass} />
           </div>
 
           <div>
