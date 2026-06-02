@@ -1,15 +1,33 @@
-// src/components/MeetingCard.tsx
+// src/app/meetings/[id]/page.tsx — Meeting Detail Page (Server Component)
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Meeting } from "@/lib/types";
-import { Calendar, Clock, MapPin, ArrowLeft, Users, Sparkles } from "lucide-react";
+import { getMeetingById } from "@/actions";
+import { Header } from "@/components/header";
+import { MeetingRegisterForm } from "@/components/MeetingRegisterForm";
+import { ShareMeetingButton } from "@/components/ShareMeetingButton";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  ArrowRight,
+  CheckCircle,
+  Sparkles,
+} from "lucide-react";
 
-interface MeetingCardProps {
-  meeting: Meeting;
+export const revalidate = 30;
+
+interface PageProps {
+  params: Promise<{ id: string }>;
 }
 
-export function MeetingCard({ meeting }: MeetingCardProps) {
-  const isOpen = meeting.status === "open";
+export default async function MeetingDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  const meeting = await getMeetingById(id);
 
+  if (!meeting) notFound();
+
+  const isOpen = meeting.status === "open";
   const meetingDate = new Date(meeting.date);
   const dayName = meetingDate.toLocaleDateString("ar-SA", { weekday: "long" });
   const dd = String(meetingDate.getDate()).padStart(2, "0");
@@ -26,101 +44,179 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   })();
 
   return (
-    <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-brand-orange/40 flex flex-col">
-      {/* Poster */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-brand-dark">
-        {meeting.poster_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={meeting.poster_url}
-            alt={meeting.title}
-            className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-6 right-6 w-24 h-24 border border-brand-orange rounded-full" />
-              <div className="absolute bottom-6 left-6 w-16 h-16 border border-brand-orange rounded-full" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-brand-orange rotate-45" />
-            </div>
-            <Sparkles size={48} className="text-brand-orange opacity-30 relative z-10" />
-          </div>
-        )}
+    <div className="min-h-screen bg-brand-light font-tajawal">
+      <Header />
 
-        {/* Status badge */}
-        <div className="absolute top-3 right-3 z-10">
-          <span
-            className={`text-xs font-semibold px-3 py-1 rounded-full shadow-md ${
-              isOpen
-                ? "bg-emerald-500 text-white"
-                : "bg-gray-700 text-white"
-            }`}
-          >
-            {isOpen ? "التسجيل مفتوح" : "انتهى اللقاء"}
-          </span>
-        </div>
-
-        {/* Day badge */}
-        <div className="absolute bottom-3 right-3 z-10">
-          <span className="text-xs bg-white/95 text-brand-dark px-3 py-1 rounded-md font-bold backdrop-blur-sm shadow-sm">
-            {dayName}
-          </span>
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-6 py-3 text-sm text-gray-500 flex items-center gap-2">
+          <Link href="/" className="hover:text-brand-orange transition-colors">
+            الرئيسية
+          </Link>
+          <ArrowRight size={12} className="rotate-180" />
+          <Link href="/#meetings" className="hover:text-brand-orange transition-colors">
+            لقاءات القيادات
+          </Link>
+          <ArrowRight size={12} className="rotate-180" />
+          <span className="text-brand-dark font-medium truncate">{meeting.title}</span>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-5 flex flex-col flex-1 gap-3">
-        <h3 className="text-brand-dark font-bold text-lg leading-snug line-clamp-2 group-hover:text-brand-orange transition-colors">
-          {meeting.title}
-        </h3>
-
-        {meeting.description && (
-          <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
-            {meeting.description}
-          </p>
-        )}
-
-        {/* Meta */}
-        <div className="space-y-2 text-sm text-gray-600 mt-auto pt-2">
-          <div className="flex items-center gap-2">
-            <Calendar size={15} className="text-brand-orange shrink-0" />
-            <span>{dateFormatted}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={15} className="text-brand-orange shrink-0" />
-            <span>{timeFormatted}</span>
-          </div>
-          {meeting.location && (
-            <div className="flex items-center gap-2">
-              <MapPin size={15} className="text-brand-orange shrink-0" />
-              <span className="truncate">{meeting.location}</span>
+      <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Left: Meeting Info */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Poster */}
+            <div className="w-full max-w-md mx-auto rounded-2xl overflow-hidden bg-brand-dark shadow-lg">
+              {meeting.poster_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={meeting.poster_url}
+                  alt={meeting.title}
+                  className="w-full h-auto object-contain"
+                />
+              ) : (
+                <div className="aspect-[3/4] flex items-center justify-center relative">
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-8 right-8 w-32 h-32 border-2 border-brand-orange rounded-full" />
+                    <div className="absolute bottom-8 left-8 w-24 h-24 border-2 border-brand-orange rounded-full" />
+                  </div>
+                  <Sparkles size={64} className="text-brand-orange opacity-30 relative z-10" />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="pt-3 border-t border-gray-100 mt-2">
-          {isOpen ? (
-            <Link
-              href={`/meetings/${meeting.id}`}
-              className="w-full flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold py-2.5 rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
-            >
-              التسجيل
-              <ArrowLeft size={15} />
-            </Link>
-          ) : (
-            <div className="bg-gray-50 rounded-lg py-3 text-center">
-              <p className="text-brand-dark font-semibold text-sm mb-1">
-                انتهى اللقاء — {dateFormatted}
+            {/* Status badge */}
+            <div>
+              <span
+                className={`inline-block text-sm font-semibold px-4 py-1.5 rounded-full shadow-md ${
+                  isOpen
+                    ? "bg-emerald-500 text-white"
+                    : "bg-gray-700 text-white"
+                }`}
+              >
+                {isOpen ? "التسجيل مفتوح" : "انتهى اللقاء"}
+              </span>
+            </div>
+
+            {/* Title & description */}
+            <div>
+              <p className="text-brand-orange text-sm font-semibold mb-2">
+                لقاءات القيادات الدورية
               </p>
-              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-600">
-                <Users size={13} className="text-brand-orange" />
-                <span>عدد الحضور: {meeting.attendees_count}</span>
+              <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                <h1 className="text-3xl md:text-4xl font-extrabold text-brand-dark leading-tight">
+                  {meeting.title}
+                </h1>
+                <ShareMeetingButton meetingId={meeting.id} />
+              </div>
+
+              {meeting.description && (
+                <p className="text-gray-600 text-base leading-relaxed">
+                  {meeting.description}
+                </p>
+              )}
+            </div>
+
+            {/* Details Grid */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+              <h3 className="font-bold text-brand-dark mb-4 text-lg">تفاصيل اللقاء</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-brand-orange/10 flex items-center justify-center shrink-0">
+                    <Calendar size={18} className="text-brand-orange" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 mb-0.5">التاريخ</p>
+                    <p className="font-semibold text-brand-dark text-sm">{dateFormatted}</p>
+                    <p className="text-xs text-gray-500">{dayName}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-brand-orange/10 flex items-center justify-center shrink-0">
+                    <Clock size={18} className="text-brand-orange" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 mb-0.5">الوقت</p>
+                    <p className="font-semibold text-brand-dark text-sm">{timeFormatted}</p>
+                  </div>
+                </div>
+
+                {meeting.location && (
+                  <div className="flex items-start gap-3 sm:col-span-2">
+                    <div className="w-10 h-10 rounded-full bg-brand-orange/10 flex items-center justify-center shrink-0">
+                      <MapPin size={18} className="text-brand-orange" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-0.5">الموقع</p>
+                      <p className="font-semibold text-brand-dark text-sm">{meeting.location}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+
+            {/* Objectives */}
+            {meeting.objectives && meeting.objectives.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                <h3 className="font-bold text-brand-dark mb-4 text-lg">محاور اللقاء وأهدافه</h3>
+                <ul className="space-y-2.5">
+                  {meeting.objectives.map((obj, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-gray-700 text-sm">
+                      <CheckCircle size={16} className="text-brand-orange shrink-0 mt-0.5" />
+                      <span className="leading-relaxed">{obj}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Right: Registration Form / Closed State */}
+          <div className="lg:col-span-2">
+            <div className="lg:sticky lg:top-24">
+              {isOpen ? (
+                <MeetingRegisterForm meetingId={meeting.id} meetingTitle={meeting.title} />
+              ) : (
+                <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center shadow-sm">
+                  <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <Users size={28} className="text-gray-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-brand-dark mb-2">انتهى اللقاء</h3>
+                  <p className="text-gray-500 text-sm mb-5">{dateFormatted}</p>
+
+                  <div className="bg-brand-light rounded-xl p-5">
+                    <p className="text-xs text-gray-500 mb-1">عدد الحضور</p>
+                    <p className="text-3xl font-extrabold text-brand-orange">
+                      {meeting.attendees_count}
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/#meetings"
+                    className="block mt-5 text-sm text-brand-orange hover:text-brand-orange-hover font-medium"
+                  >
+                    تصفح اللقاءات الأخرى ←
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </article>
+
+      {/* Footer */}
+      <footer className="bg-brand-dark border-t border-white/5 mt-10">
+        <div className="max-w-6xl mx-auto px-6 py-8 text-center space-y-2">
+          <p className="text-white/40 text-xs">
+            © {new Date().getFullYear()} جمعية تمكين القيادات الأهلية — جميع الحقوق محفوظة
+          </p>
+          <p className="text-brand-orange text-xs font-medium tracking-wide">
+            Designed & Developed by Raghad Alshammari
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }

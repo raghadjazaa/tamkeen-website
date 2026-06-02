@@ -35,8 +35,8 @@ export function MeetingRegisterForm({ meetingId, meetingTitle }: MeetingRegister
 
     // Validate quadrinomial name (at least 4 parts)
     const nameParts = fullName.split(/\s+/).filter(p => p.length > 0);
-    if (nameParts.length < 4) {
-      setError("الرجاء كتابة الاسم الرباعي كاملاً (4 أسماء)");
+    if (nameParts.length < 3) {
+      setError("الرجاء كتابة الاسم الثلاثي كاملاً (3 أسماء)");
       return;
     }
 
