@@ -95,7 +95,7 @@ export function MeetingRegisterForm({ meetingId, meetingTitle }: MeetingRegister
     <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
       <h3 className="text-xl font-bold text-brand-dark mb-1">نموذج التسجيل</h3>
       <p className="text-gray-500 text-sm mb-6">
-        املئي البيانات التالية لتأكيد حضورك
+        املأ البيانات التالية لتأكيد حضورك
       </p>
 
       {error && (
@@ -131,7 +131,7 @@ export function MeetingRegisterForm({ meetingId, meetingTitle }: MeetingRegister
         </div>
 
         
-        {/*الاسم الثلاثي*\}
+        {/*الاسم الثلاثي*/}
         <div>
           <label className="block text-sm font-medium text-brand-dark mb-1.5">
            الاسم الثلاثي <span className="text-red-500">*</span>
