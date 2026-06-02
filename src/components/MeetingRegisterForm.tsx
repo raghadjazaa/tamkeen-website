@@ -144,7 +144,7 @@ export function MeetingRegisterForm({ meetingId, meetingTitle }: MeetingRegister
               name="full_name"
               type="text"
               required
-              placeholder="مثال: محمد عبدالله صالح الشمري"
+              placeholder="مثال: محمد عبدالله الشمري"
               className={`${inputClass} pr-10`}
             />
           </div>
