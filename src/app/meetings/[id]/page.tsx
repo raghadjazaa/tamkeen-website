@@ -1,6 +1,5 @@
 // src/app/meetings/[id]/page.tsx — Meeting Detail Page (Server Component)
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { getMeetingById } from "@/actions";
 import { Header } from "@/components/header";
@@ -68,17 +67,16 @@ export default async function MeetingDetailPage({ params }: PageProps) {
           {/* Left: Meeting Info */}
           <div className="lg:col-span-3 space-y-6">
             {/* Poster */}
-            <div className="relative w-full aspect-[3/4] max-w-md mx-auto rounded-2xl overflow-hidden bg-brand-dark shadow-lg">
+            <div className="w-full max-w-md mx-auto rounded-2xl overflow-hidden bg-brand-dark shadow-lg">
               {meeting.poster_url ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={meeting.poster_url}
                   alt={meeting.title}
-                  fill
-                  className="object-contain"
-                  priority
+                  className="w-full h-auto object-contain"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="aspect-[3/4] flex items-center justify-center relative">
                   <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-8 right-8 w-32 h-32 border-2 border-brand-orange rounded-full" />
                     <div className="absolute bottom-8 left-8 w-24 h-24 border-2 border-brand-orange rounded-full" />
@@ -86,19 +84,19 @@ export default async function MeetingDetailPage({ params }: PageProps) {
                   <Sparkles size={64} className="text-brand-orange opacity-30 relative z-10" />
                 </div>
               )}
+            </div>
 
-              {/* Status badge */}
-              <div className="absolute top-4 right-4">
-                <span
-                  className={`text-sm font-semibold px-4 py-1.5 rounded-full shadow-md ${
-                    isOpen
-                      ? "bg-emerald-500 text-white"
-                      : "bg-gray-700 text-white"
-                  }`}
-                >
-                  {isOpen ? "التسجيل مفتوح" : "انتهى اللقاء"}
-                </span>
-              </div>
+            {/* Status badge */}
+            <div>
+              <span
+                className={`inline-block text-sm font-semibold px-4 py-1.5 rounded-full shadow-md ${
+                  isOpen
+                    ? "bg-emerald-500 text-white"
+                    : "bg-gray-700 text-white"
+                }`}
+              >
+                {isOpen ? "التسجيل مفتوح" : "انتهى اللقاء"}
+              </span>
             </div>
 
             {/* Title & description */}
