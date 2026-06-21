@@ -25,6 +25,7 @@ export interface Course {
   require_email: boolean;
   require_association_name: boolean;
   require_license_number: boolean;
+  attendees_count: number;
   created_at: string;
   updated_at: string;
 }

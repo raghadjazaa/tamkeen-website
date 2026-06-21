@@ -195,6 +195,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 requireEmail={course.require_email}
                 requireAssociationName={course.require_association_name}
                 requireLicenseNumber={course.require_license_number}
+                attendeesCount={course.attendees_count}
               />
             </div>
           </div>

@@ -1,7 +1,7 @@
 // src/components/CourseCard.tsx
 import Link from "next/link";
 import { Course } from "@/lib/types";
-import { Calendar, MapPin, User, Clock, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, User, Clock, ArrowLeft, Users } from "lucide-react";
 
 interface CourseCardProps {
   course: Course;
@@ -111,7 +111,11 @@ export function CourseCard({ course }: CourseCardProps) {
             </Link>
           ) : (
             <div className="bg-gray-50 rounded-lg py-3 text-center">
-              <p className="text-gray-500 text-sm">التسجيل مغلق</p>
+              <p className="text-brand-dark font-semibold text-sm mb-1">التسجيل مغلق</p>
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-600">
+                <Users size={13} className="text-brand-orange" />
+                <span>عدد الحضور: {course.attendees_count}</span>
+              </div>
             </div>
           )}
         </div>

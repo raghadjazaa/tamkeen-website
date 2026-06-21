@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { registerInCourse } from "../actions";
-import { CheckCircle, AlertCircle, Loader2, Send } from "lucide-react";
+import { CheckCircle, AlertCircle, Loader2, Send, Users } from "lucide-react";
 
 interface RegisterFormProps {
   courseId: string;
@@ -11,6 +11,7 @@ interface RegisterFormProps {
   requireEmail?: boolean;
   requireAssociationName?: boolean;
   requireLicenseNumber?: boolean;
+  attendeesCount?: number;
 }
 
 export function RegisterForm({
@@ -20,6 +21,7 @@ export function RegisterForm({
   requireEmail = false,
   requireAssociationName = false,
   requireLicenseNumber = false,
+  attendeesCount = 0,
 }: RegisterFormProps) {
   const [state, setState] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -75,7 +77,11 @@ export function RegisterForm({
         <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
           <AlertCircle size={22} className="text-gray-400" />
         </div>
-        <p className="text-gray-500 font-medium">التسجيل في هذه الدورة مغلق حالياً</p>
+        <p className="text-gray-500 font-medium mb-4">التسجيل في هذه الدورة مغلق حالياً</p>
+        <div className="bg-white rounded-xl p-4 inline-flex items-center gap-2 border border-gray-100">
+          <Users size={16} className="text-brand-orange" />
+          <span className="text-sm text-brand-dark font-semibold">عدد الحضور: {attendeesCount}</span>
+        </div>
       </div>
     );
   }

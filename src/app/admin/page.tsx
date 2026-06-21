@@ -242,13 +242,26 @@ function AdminDashboard() {
   }
 
   async function handleToggleStatus(course: Course) {
-    const newStatus = course.status === "open" ? "closed" : "open";
-    startTransition(async () => {
-      await updateCourseStatus(course.id, newStatus);
-      setCourses((prev) =>
-        prev.map((c) => (c.id === course.id ? { ...c, status: newStatus } : c))
-      );
-    });
+    if (course.status === "open") {
+      const countStr = prompt("كم عدد الحضور؟", "0");
+      if (countStr === null) return;
+      const count = parseInt(countStr) || 0;
+      startTransition(async () => {
+        await updateCourseStatus(course.id, "closed", count);
+        setCourses((prev) =>
+          prev.map((c) =>
+            c.id === course.id ? { ...c, status: "closed", attendees_count: count } : c
+          )
+        );
+      });
+    } else {
+      startTransition(async () => {
+        await updateCourseStatus(course.id, "open");
+        setCourses((prev) =>
+          prev.map((c) => (c.id === course.id ? { ...c, status: "open" } : c))
+        );
+      });
+    }
   }
 
   async function handleDelete(id: string) {
@@ -371,7 +384,7 @@ function AdminDashboard() {
                               : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {course.status === "open" ? "مفتوح" : "مغلق"}
+                          {course.status === "open" ? "مفتوح" : `مغلق — ${course.attendees_count} حاضر`}
                         </span>
                       </div>
                       <p className="text-xs text-gray-500">

@@ -74,14 +74,20 @@ export async function createCourse(
 
 export async function updateCourseStatus(
   id: string,
-  status: "open" | "closed"
+  status: "open" | "closed",
+  attendeesCount?: number
 ): Promise<{ success: boolean; error?: string }> {
   if (!(await isAdmin())) return { success: false, error: "غير مصرح" };
   const supabase = createAdminClient();
 
+  const updates: any = { status };
+  if (typeof attendeesCount === "number") {
+    updates.attendees_count = attendeesCount;
+  }
+
   const { error } = await supabase
     .from("courses")
-    .update({ status })
+    .update(updates)
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
