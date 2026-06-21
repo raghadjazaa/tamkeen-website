@@ -15,7 +15,7 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const [courses, meetings, settings] = await Promise.all([
-    getCourses({ status: "open" }),
+    getCourses(),
     getMeetings(),
     getSiteSettings(),
   ]);
@@ -88,7 +88,9 @@ export default async function HomePage() {
             </h2>
           </div>
           {courses.length > 0 && (
-            <p className="text-gray-500 text-sm">{courses.length} دورة متاحة</p>
+            <p className="text-gray-500 text-sm">
+              {courses.filter((c) => c.status === "open").length} دورة متاحة
+            </p>
           )}
         </div>
 
